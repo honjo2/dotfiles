@@ -1,0 +1,21 @@
+[user]
+  name = honjo2
+  email = honjo2@gmail.com
+[alias]
+  co = checkout
+  ci = commit
+  st = status
+  br = branch
+  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  fixit = commit --amend --no-edit
+[color]
+  ui = auto
+[http]
+  postBuffer = 2M
+[filter "lfs"]
+  required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+[heroku]
+  account = honjo2
