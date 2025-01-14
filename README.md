@@ -8,5 +8,6 @@ my dot files
 cd path/to/workspace
 git clone https://github.com/honjo2/dotfiles.git
 cd dotfiles
+chmod +x install.sh
 ./install.sh
 ```

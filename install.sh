@@ -1,22 +1,35 @@
-if [ -d ~/.oh-my-zsh ]; then :; else
-    echo "install oh-my-zsh"
-    curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
-fi
+#!/bin/bash
 
+# dotfiles ディレクトリのパス
+DOTFILES_DIR=$(cd "$(dirname "$0")" && pwd)
 
-mkdir -p $HOME/.oh-my-zsh/themes
-cp -n .oh-my-zsh/themes/mytheme.zsh-theme $HOME/.oh-my-zsh/themes/mytheme.zsh-theme
+# ドットで始まる全てのファイルを取得 (除外リストも適用)
+EXCLUDE_FILES=(. .. .git .gitignore)  # 除外するファイル/ディレクトリ
+FILES=$(find "$DOTFILES_DIR" -maxdepth 1 -type f -name ".*" | while read -r file; do
+    basename "$file"
+done | grep -vFx "${EXCLUDE_FILES[@]}")
 
-if [ "$REMOTE_CONTAINERS" = true ]; then # only in .devcontianer
-    chsh -s /bin/zsh
-else
-    cp -n .gitconfig $HOME/.gitconfig
-fi
+# シンボリックリンクを作成する関数
+create_symlink() {
+    local src=$1
+    local dest=$2
 
-if [ -e $HOME/.zshrc ]; then
-    mv $HOME/.zshrc $HOME/.zshrc_old-$(date "+%FT%T")
-fi
+    if [ -L "$dest" ]; then
+        echo "既存のシンボリックリンクを確認: $dest"
+    elif [ -e "$dest" ]; then
+        echo "既存のファイル/ディレクトリをバックアップ: $dest -> ${dest}.bak"
+        mv "$dest" "${dest}.bak"
+    fi
 
-cp .zshrc $HOME/.zshrc
+    ln -s "$src" "$dest"
+    echo "シンボリックリンク作成: $src -> $dest"
+}
 
-zsh
+# ファイルごとに処理
+for file in $FILES; do
+    src="$DOTFILES_DIR/$file"
+    dest="$HOME/$file"
+    create_symlink "$src" "$dest"
+done
+
+echo "全てのシンボリックリンクが作成されました！"

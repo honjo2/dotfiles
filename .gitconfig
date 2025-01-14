@@ -1,5 +1,5 @@
 [user]
-  name = honjo2
+	name = honjo2
   email = honjo2@gmail.com
 [alias]
   co = checkout
@@ -7,15 +7,19 @@
   st = status
   br = branch
   hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  #hist = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
   fixit = commit --amend --no-edit
 [color]
   ui = auto
 [http]
   postBuffer = 2M
+	sslVerify = false
 [filter "lfs"]
   required = true
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
-[heroku]
-  account = honjo2
+[init]
+	defaultBranch = main
+[core]
+	quotepath = false
