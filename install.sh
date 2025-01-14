@@ -1,35 +1,25 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# dotfiles ディレクトリのパス
-DOTFILES_DIR=$(cd "$(dirname "$0")" && pwd)
+# install.shが置かれているディレクトリを取得
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# ドットで始まる全てのファイルを取得 (除外リストも適用)
-EXCLUDE_FILES=(. .. .git .gitignore)  # 除外するファイル/ディレクトリ
-FILES=$(find "$DOTFILES_DIR" -maxdepth 1 -type f -name ".*" | while read -r file; do
-    basename "$file"
-done | grep -vFx "${EXCLUDE_FILES[@]}")
+echo "Dotfiles Directory: ${DOTFILES_DIR}"
 
-# シンボリックリンクを作成する関数
-create_symlink() {
-    local src=$1
-    local dest=$2
+# カレントディレクトリ内の「.」で始まるファイル・フォルダを走査
+for file in "${DOTFILES_DIR}"/.*; do
+  # basename を取得
+  filename="$(basename "$file")"
 
-    if [ -L "$dest" ]; then
-        echo "既存のシンボリックリンクを確認: $dest"
-    elif [ -e "$dest" ]; then
-        echo "既存のファイル/ディレクトリをバックアップ: $dest -> ${dest}.bak"
-        mv "$dest" "${dest}.bak"
-    fi
+  # スキップするパターン（適宜追加・修正してください）
+  case "$filename" in
+    "." | ".." | ".git" | ".gitignore" | ".DS_Store")
+      continue
+      ;;
+  esac
 
-    ln -s "$src" "$dest"
-    echo "シンボリックリンク作成: $src -> $dest"
-}
-
-# ファイルごとに処理
-for file in $FILES; do
-    src="$DOTFILES_DIR/$file"
-    dest="$HOME/$file"
-    create_symlink "$src" "$dest"
+  # ホームディレクトリにシンボリックリンクを作る
+  # -s シンボリックリンクを作成, -f 同名のリンクやファイルが存在する場合は強制的に上書き
+  ln -sfv "$file" "$HOME/$filename"
 done
 
-echo "全てのシンボリックリンクが作成されました！"
+echo "Done!"
