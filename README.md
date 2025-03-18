@@ -1,6 +1,7 @@
 # dotfiles
 
 my dot files
+test
 
 # インストール
 
